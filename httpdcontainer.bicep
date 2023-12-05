@@ -7,15 +7,21 @@ resource httpdContainer1 'Microsoft.ContainerInstance/containerGroups@2023-05-01
   properties: {
     containers: [
       {
-        name: 'httpd-container-2'
+        name: 'httpd-container-1'
         properties: {
-          image: 
+          image: 'nginx:1.10.1-alpine' //Docker image reference
           resources: {
             requests: {
-              cpu: 
-              memoryInGB: 
+              cpu: 1
+              memoryInGB: 1
             }
           }
+          ports:[
+            {
+              port: 80
+              protocol: 'TCP'
+            }
+          ]
         }
       }
     ]
@@ -31,13 +37,19 @@ resource httpdContainer2 'Microsoft.ContainerInstance/containerGroups@2023-05-01
       {
         name: 'httpd-container-2'
         properties: {
-          image: 
+          image: 'nginx:1.10.1-alpine'
           resources: {
             requests: {
-              cpu: 
-              memoryInGB: 
+              cpu: 1
+              memoryInGB: 1
             }
           }
+          ports: [
+            {
+              port: 80
+              protocol: 'TCP'
+            }
+          ]
         }
       }
     ]
