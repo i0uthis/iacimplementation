@@ -2,7 +2,8 @@
 param location string = resourceGroup().location
 
 
-param appName string = 'beesknee'
+param appName1 string = 'beesknee1'
+param appName2 string = 'beesknee2'
 
 @allowed([
   'Always'
@@ -20,7 +21,7 @@ var subnetPrefix = '10.0.0.0/24'
 var backendSubnetPrefix = '10.0.1.0/24'
 
 resource httpdContainer1 'Microsoft.ContainerInstance/containerGroups@2023-05-01' = {
-  name: '${appName}-httpcontainer1'
+  name: '${appName1}-httpcontainer1'
   location: location
   properties: {
     containers: [
@@ -59,7 +60,7 @@ resource httpdContainer1 'Microsoft.ContainerInstance/containerGroups@2023-05-01
 }
 
 resource httpdContainer2 'Microsoft.ContainerInstance/containerGroups@2023-05-01' = {
-  name: '${appName}-httpcontainer2'
+  name: '${appName2}-httpcontainer2'
   location: location
   properties: {
     containers: [
