@@ -17,8 +17,8 @@ steps:
       scriptLocation: 'inlineScript'
       inlineScript: |
         # Create a resource group
-        az group create --name JohnIaC --location 'Canada Central'
+        az group create --name iacimplement --location 'Canada Central'
   
         # Deploy the Bicep file
-        az deployment group create --resource-group JohnIaC --template-file 'appgateway.bicep'
+        az deployment group create --resource-group iacimplement --template-file 'appgateway.bicep'
   
