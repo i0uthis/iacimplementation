@@ -16,7 +16,7 @@ resource httpdContainer1 'Microsoft.ContainerInstance/containerGroups@2023-05-01
       {
         name: 'httpd-container-1'
         properties: {
-          image: 'iacRegistry1.azure.cr.io/iac:latest'
+          image: 'iacRegistry1.azure.cr.io/iac'
           resources: {
             requests: {
               cpu: 1
@@ -54,7 +54,7 @@ resource httpdContainer2 'Microsoft.ContainerInstance/containerGroups@2023-05-01
       {
         name: 'httpd-container-2'
         properties: {
-          image: 'iacRegistry1.azure.cr.io/iac:latest'
+          image: 'iacRegistry1.azure.cr.io/iac'
           resources: {
             requests: {
               cpu: 1
