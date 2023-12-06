@@ -173,7 +173,7 @@ resource applicationGateWay 'Microsoft.Network/applicationGateways@2023-05-01' =
         properties: {
           privateIPAllocationMethod: 'Dynamic'
           publicIPAddress: {
-            id: resourceId('Microsoft.Network/publicIPAddresses', '${publicIPAddressName}0')
+            id: resourceId('Microsoft.Network/publicIPAddresses', '${publicIPAddressName}')
           }
         }
       }
