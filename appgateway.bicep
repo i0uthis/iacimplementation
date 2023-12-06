@@ -11,9 +11,6 @@ param appName string = 'beesknee'
 ])
 param restartPolicy string = 'Always'
 
-param containerIPv4Address1 string
-param containerIPv4Address2 string
-
 
 var virtualNetworkName = 'myVNet'
 var networkInterfaceName = 'net-int'
@@ -107,7 +104,7 @@ output containerIPv4Address1 string = httpdContainer1.properties.ipAddress.ip
 output containerIPv4Address2 string = httpdContainer2.properties.ipAddress.ip
 
 
-resource publicIPAddress 'Microsoft.Network/publicIPAddresses@2021-05-01'= {
+resource publicIPAddress 'Microsoft.Network/publicIPAddresses@2023-05-01'= {
   name: publicIPAddressName
   location: location
   sku: {
@@ -120,7 +117,7 @@ resource publicIPAddress 'Microsoft.Network/publicIPAddresses@2021-05-01'= {
   }
 }
 
-resource virtualNetwork 'Microsoft.Network/virtualNetworks@2021-05-01' = {
+resource virtualNetwork 'Microsoft.Network/virtualNetworks@2023-05-01' = {
   name: virtualNetworkName
   location: location
   properties: {
@@ -152,7 +149,7 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2021-05-01' = {
   }
 }
 
-resource applicationGateWay 'Microsoft.Network/applicationGateways@2021-05-01' = {
+resource applicationGateWay 'Microsoft.Network/applicationGateways@2023-05-01' = {
   name: applicationGateWayName
   location: location
   properties: {
@@ -195,10 +192,10 @@ resource applicationGateWay 'Microsoft.Network/applicationGateways@2021-05-01' =
         properties: {
           backendAddresses: [
             {
-              ipAddress: containerIPv4Address1
+              ipAddress: 'containerIPv4Address1'
             }
             {
-              ipAddress: containerIPv4Address2
+              ipAddress: 'containerIPv4Address2'
             }
           ]
         }
@@ -245,6 +242,7 @@ resource applicationGateWay 'Microsoft.Network/applicationGateways@2021-05-01' =
           backendHttpSettings: {
             id: resourceId('Microsoft.Network/applicationGateways/backendHttpSettingsCollection', applicationGateWayName, 'myHTTPSetting')
           }
+          priority: 100
         }
       }
     ]
@@ -260,7 +258,7 @@ resource applicationGateWay 'Microsoft.Network/applicationGateways@2021-05-01' =
   ]
 }
 
-resource networkInterface 'Microsoft.Network/networkInterfaces@2021-05-01' = [for i in range(0, 2): {
+resource networkInterface 'Microsoft.Network/networkInterfaces@2023-05-01' = [for i in range(0, 2): {
   name: '${networkInterfaceName}${i + 1}'
   location: location
   properties: {
