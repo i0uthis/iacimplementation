@@ -13,10 +13,7 @@ param restartPolicy string = 'Always'
 
 
 var virtualNetworkName = 'myVNet'
-var networkInterfaceName = 'net-int'
-var ipconfigName = 'ipconfig'
 var publicIPAddressName = 'public_ip'
-var nsgName = 'vm-nsg'
 var applicationGateWayName = 'myAppGateway'
 var virtualNetworkPrefix = '10.0.0.0/16'
 var subnetPrefix = '10.0.0.0/24'
@@ -257,43 +254,6 @@ resource applicationGateWay 'Microsoft.Network/applicationGateways@2023-05-01' =
     publicIPAddress
   ]
 }
-
-resource networkInterface 'Microsoft.Network/networkInterfaces@2023-05-01' = [for i in range(0, 2): {
-  name: '${networkInterfaceName}${i + 1}'
-  location: location
-  properties: {
-    ipConfigurations: [
-      {
-        name: '${ipconfigName}${i + 1}'
-        properties: {
-          privateIPAllocationMethod: 'Dynamic'
-          publicIPAddress: {
-            id: resourceId('Microsoft.Network/publicIPAddresses', '${publicIPAddressName}${i + 1}')
-          }
-          subnet: {
-            id: resourceId('Microsoft.Network/virtualNetworks/subnets', virtualNetworkName, 'myBackendSubnet')
-          }
-          primary: true
-          privateIPAddressVersion: 'IPv4'
-          applicationGatewayBackendAddressPools: [
-            {
-              id: resourceId('Microsoft.Network/applicationGateways/backendAddressPools', applicationGateWayName, 'myBackendPool')
-            }
-          ]
-        }
-      }
-    ]
-    enableAcceleratedNetworking: false
-    enableIPForwarding: false
-    networkSecurityGroup: {
-      id: resourceId('Microsoft.Network/networkSecurityGroups', '${nsgName}${i + 1}')
-    }
-  }
-  dependsOn: [
-    publicIPAddress
-    applicationGateWay
-  ]
-}]
 
 
 
