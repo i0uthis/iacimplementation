@@ -1,17 +1,20 @@
-@description('Admin username for the backend servers')
-param adminUsername string
-
-@description('Password for the admin account on the backend servers')
-@secure()
-param adminPassword string
-
 @description('Location for all resources.')
 param location string = resourceGroup().location
 
-@description('Size of the virtual machine.')
-param vmSize string = 'Standard_B2ms'
 
-var virtualMachineName = 'myVM'
+param appName string = 'beesknee'
+
+@allowed([
+  'Always'
+  'Never'
+  'OnFailure'
+])
+param restartPolicy string = 'Always'
+
+param containerIPv4Address1 string
+param containerIPv4Address2 string
+
+
 var virtualNetworkName = 'myVNet'
 var networkInterfaceName = 'net-int'
 var ipconfigName = 'ipconfig'
@@ -22,30 +25,90 @@ var virtualNetworkPrefix = '10.0.0.0/16'
 var subnetPrefix = '10.0.0.0/24'
 var backendSubnetPrefix = '10.0.1.0/24'
 
-resource nsg 'Microsoft.Network/networkSecurityGroups@2021-05-01' = [for i in range(0, 2): {
-  name: '${nsgName}${i + 1}'
+resource httpdContainer1 'Microsoft.ContainerInstance/containerGroups@2023-05-01' = {
+  name: '${appName}-httpcontainer1'
   location: location
   properties: {
-    securityRules: [
+    containers: [
       {
-        name: 'RDP'
+        name: 'httpd-container-1'
         properties: {
-          protocol: 'Tcp'
-          sourcePortRange: '*'
-          destinationPortRange: '3389'
-          sourceAddressPrefix: '*'
-          destinationAddressPrefix: '*'
-          access: 'Allow'
-          priority: 300
-          direction: 'Inbound'
+          image: 'iouthis/iacdockerhubrepo:latest'
+          resources: {
+            requests: {
+              cpu: 1
+              memoryInGB: 1
+            }
+          }
+          ports:[
+            {
+              port: 80
+              protocol: 'TCP'
+            }
+          ]
         }
       }
     ]
+    osType: 'Linux'
+    restartPolicy: restartPolicy
+    ipAddress:{
+      type: 'Public'
+      ip: '10.10.0.2'
+      ports: [
+        {
+          port: 80
+          protocol: 'TCP'
+        }
+      ]
+    }
   }
-}]
+}
 
-resource publicIPAddress 'Microsoft.Network/publicIPAddresses@2021-05-01' = [for i in range(0, 3): {
-  name: '${publicIPAddressName}${i}'
+resource httpdContainer2 'Microsoft.ContainerInstance/containerGroups@2023-05-01' = {
+  name: '${appName}-httpcontainer2'
+  location: location
+  properties: {
+    containers: [
+      {
+        name: 'httpd-container-2'
+        properties: {
+          image: 'iouthis/iacdockerhubrepo:latest'
+          resources: {
+            requests: {
+              cpu: 1
+              memoryInGB: 1
+            }
+          }
+          ports: [
+            {
+              port: 80
+              protocol: 'TCP'
+            }
+          ]
+        }
+      }
+    ]
+    osType: 'Linux'
+    restartPolicy: restartPolicy
+    ipAddress:{
+      type: 'Public'
+      ip: '10.10.0.2'
+      ports: [
+        {
+          port: 80
+          protocol: 'TCP'
+        }
+      ]
+    }
+  }
+}
+
+output containerIPv4Address1 string = httpdContainer1.properties.ipAddress.ip
+output containerIPv4Address2 string = httpdContainer2.properties.ipAddress.ip
+
+
+resource publicIPAddress 'Microsoft.Network/publicIPAddresses@2021-05-01'= {
+  name: publicIPAddressName
   location: location
   sku: {
     name: 'Standard'
@@ -55,7 +118,7 @@ resource publicIPAddress 'Microsoft.Network/publicIPAddresses@2021-05-01' = [for
     publicIPAllocationMethod: 'Static'
     idleTimeoutInMinutes: 4
   }
-}]
+}
 
 resource virtualNetwork 'Microsoft.Network/virtualNetworks@2021-05-01' = {
   name: virtualNetworkName
@@ -88,70 +151,6 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2021-05-01' = {
     enableVmProtection: false
   }
 }
-
-resource virtualMachine 'Microsoft.Compute/virtualMachines@2021-11-01' = [for i in range(0, 2): {
-  name: '${virtualMachineName}${i + 1}'
-  location: location
-  properties: {
-    hardwareProfile: {
-      vmSize: vmSize
-    }
-    storageProfile: {
-      imageReference: {
-        publisher: 'MicrosoftWindowsServer'
-        offer: 'WindowsServer'
-        sku: '2016-Datacenter'
-        version: 'latest'
-      }
-      osDisk: {
-        osType: 'Windows'
-        createOption: 'FromImage'
-        caching: 'ReadWrite'
-        managedDisk: {
-          storageAccountType: 'StandardSSD_LRS'
-        }
-        diskSizeGB: 127
-      }
-    }
-    osProfile: {
-      computerName: '${virtualMachineName}${i + 1}'
-      adminUsername: adminUsername
-      adminPassword: adminPassword
-      windowsConfiguration: {
-        provisionVMAgent: true
-        enableAutomaticUpdates: true
-      }
-      allowExtensionOperations: true
-    }
-    networkProfile: {
-      networkInterfaces: [
-        {
-          id: resourceId('Microsoft.Network/networkInterfaces', '${networkInterfaceName}${i + 1}')
-        }
-      ]
-    }
-  }
-  dependsOn: [
-    networkInterface
-  ]
-}]
-
-resource virtualMachine_IIS 'Microsoft.Compute/virtualMachines/extensions@2021-11-01' = [for i in range(0, 2): {
-  name: '${virtualMachineName}${(i + 1)}/IIS'
-  location: location
-  properties: {
-    autoUpgradeMinorVersion: true
-    publisher: 'Microsoft.Compute'
-    type: 'CustomScriptExtension'
-    typeHandlerVersion: '1.4'
-    settings: {
-      commandToExecute: 'powershell Add-WindowsFeature Web-Server; powershell Add-Content -Path "C:\\inetpub\\wwwroot\\Default.htm" -Value $($env:computername)'
-    }
-  }
-  dependsOn: [
-    virtualMachine
-  ]
-}]
 
 resource applicationGateWay 'Microsoft.Network/applicationGateways@2021-05-01' = {
   name: applicationGateWayName
@@ -193,7 +192,16 @@ resource applicationGateWay 'Microsoft.Network/applicationGateways@2021-05-01' =
     backendAddressPools: [
       {
         name: 'myBackendPool'
-        properties: {}
+        properties: {
+          backendAddresses: [
+            {
+              ipAddress: containerIPv4Address1
+            }
+            {
+              ipAddress: containerIPv4Address2
+            }
+          ]
+        }
       }
     ]
     backendHttpSettingsCollection: [
@@ -248,7 +256,7 @@ resource applicationGateWay 'Microsoft.Network/applicationGateways@2021-05-01' =
   }
   dependsOn: [
     virtualNetwork
-    publicIPAddress[0]
+    publicIPAddress
   ]
 }
 
@@ -286,6 +294,8 @@ resource networkInterface 'Microsoft.Network/networkInterfaces@2021-05-01' = [fo
   dependsOn: [
     publicIPAddress
     applicationGateWay
-    nsg
   ]
 }]
+
+
+

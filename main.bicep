@@ -2,17 +2,6 @@
 param appName string = 'beeskneesapp'
 param location string = 'canadacentral'
 
-// Include Application Gateway Template
-module appGatewayModule 'appgateway.bicep' = {
-  name: 'appGatewayModule'
-  params: {
-    appName: appName
-    location: location
-    
-    adminPassword:
-    adminUsername:// Add any other parameters required by the appGateway.bicep file
-  }
-}
 
 // Include HTTPD Containers Template
 module httpdContainersModule 'httpdcontainer.bicep' = {
