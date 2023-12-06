@@ -12,7 +12,7 @@ pool:
 steps:
   - task: AzureCLI@2
     inputs:
-      azureSubscription: '6801522a-f52d-48a9-b457-aee6d3eea3cf'
+      azureSubscription: 'azure portal'
       scriptType: 'bash'
       scriptLocation: 'inlineScript'
       inlineScript: |
