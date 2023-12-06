@@ -192,10 +192,10 @@ resource applicationGateWay 'Microsoft.Network/applicationGateways@2023-05-01' =
         properties: {
           backendAddresses: [
             {
-              ipAddress: 'containerIPv4Address1'
+              ipAddress: httpdContainer1.properties.ipAddress.ip
             }
             {
-              ipAddress: 'containerIPv4Address2'
+              ipAddress: httpdContainer2.properties.ipAddress.ip
             }
           ]
         }
