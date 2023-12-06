@@ -8,7 +8,9 @@ module appGatewayModule 'appgateway.bicep' = {
   params: {
     appName: appName
     location: location
-    // Add any other parameters required by the appGateway.bicep file
+    
+    adminPassword:
+    adminUsername:// Add any other parameters required by the appGateway.bicep file
   }
 }
 
