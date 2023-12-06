@@ -1,4 +1,4 @@
-param appName string = 'httpsite'
+param appName string = 'beesknee'
 param location string = resourceGroup().location
 
 @allowed([
@@ -8,26 +8,6 @@ param location string = resourceGroup().location
 ])
 param restartPolicy string = 'Always'
 
-param acrName string
-param acrUser string
-param acrPass string
-
-resource acrCreds 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
-  name: '${acrName}/${acrUser}'
-  properties: {
-    contentType: 'username'
-    value: 'iacRegistry1'
-  }
-}
-
-resource acrPassword 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
-  name: '${acrName}/${acrPass}'
-  properties: {
-    contentType: 'password'
-    value: '+zPPeYvSljIsuuwdOErcXQlfCfXOw/VTYc6Rj6deGo+ACRBsFKoS'
-  }
-}
-
 resource httpdContainer1 'Microsoft.ContainerInstance/containerGroups@2023-05-01' = {
   name: '${appName}-httpcontainer1'
   location: location
@@ -36,7 +16,7 @@ resource httpdContainer1 'Microsoft.ContainerInstance/containerGroups@2023-05-01
       {
         name: 'httpd-container-1'
         properties: {
-          image: '${acrName}.azurecr.io/iacdocker:v1'
+          image: 'iacregistry1.azurecr.io/iacdocker:v1'
           resources: {
             requests: {
               cpu: 1
@@ -74,7 +54,7 @@ resource httpdContainer2 'Microsoft.ContainerInstance/containerGroups@2023-05-01
       {
         name: 'httpd-container-2'
         properties: {
-          image: '${acrName}.azurecr.io/iacdocker:v1'
+          image: 'iacregistry1.azurecr.io/iacdocker:v1'
           resources: {
             requests: {
               cpu: 1
