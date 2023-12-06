@@ -4,16 +4,21 @@
 # https://aka.ms/yaml
 
 trigger:
-- main
-
+  - main
+  
 pool:
-  vmImage: ubuntu-latest
-
+    vmImage: 'ubuntu-latest'
+  
 steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
-
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+  - task: AzureCLI@2
+    inputs:
+      azureSubscription: '6801522a-f52d-48a9-b457-aee6d3eea3cf'
+      scriptType: 'bash'
+      scriptLocation: 'inlineScript'
+      inlineScript: |
+        # Create a resource group
+        az group create --name JohnIaC --location 'Canada Central'
+  
+        # Deploy the Bicep file
+        az deployment group create --resource-group JohnIaC --template-file 'appgateway.bicep'
+  
