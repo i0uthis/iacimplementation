@@ -190,11 +190,11 @@ resource applicationGateWay 'Microsoft.Network/applicationGateways@2023-05-01' =
         properties: {
           backendAddresses: [
             {
-              ipAddress: httpdContainer1.properties.ipAddress.ip
+              ipAddress: httpdContainer1.properties.ipAddress.dnsNameLabel
               
             }
             {
-              ipAddress: httpdContainer2.properties.ipAddress.ip
+              ipAddress: httpdContainer2.properties.ipAddress.dnsNameLabel
             }
           ]
         }
