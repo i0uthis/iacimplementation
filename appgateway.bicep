@@ -98,8 +98,8 @@ resource httpdContainer2 'Microsoft.ContainerInstance/containerGroups@2023-05-01
   }
 }
 
-output containerFQDN1 string = '${httpdContainer1.properties.ipAddress.dnsNameLabel}.${location}.azurecontainer.io'
-output containerFQDN2 string = '${httpdContainer2.properties.ipAddress.dnsNameLabel}.${location}.azurecontainer.io'
+output containerIPv4Address1 string = httpdContainer1.properties.ipAddress.ip
+output containerIPv4Address2 string = httpdContainer2.properties.ipAddress.ip
 
 
 resource publicIPAddress 'Microsoft.Network/publicIPAddresses@2023-05-01'= {
@@ -190,11 +190,11 @@ resource applicationGateWay 'Microsoft.Network/applicationGateways@2023-05-01' =
         properties: {
           backendAddresses: [
             {
-              ipAddress: httpdContainer1.properties.ipAddress.dnsNameLabel
+              ipAddress: httpdContainer1.properties.ipAddress.ip
               
             }
             {
-              ipAddress: httpdContainer2.properties.ipAddress.dnsNameLabel
+              ipAddress: httpdContainer2.properties.ipAddress.ip
             }
           ]
         }
