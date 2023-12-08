@@ -1,37 +1,24 @@
-trigger: 
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
   - main
-
-stages:
-  - stage: BGDeploy
-    jobs:
-      - job: Blue
-        displayName: 'Deploy Blue'
-        pool:
-          vmImage: 'ubuntu-latest'
-        steps:
-          - task: AzureCLI@2
-            inputs:
-              azureSubscription: 'azure portal'
-              scriptType: 'bash'
-              scriptLocation: 'inlineScript'
-              inlineScript: |
-                az group create --name iacimpement-blue --location 'Canada Central'
-
-                az deployment group create --resource-group iacimplement-blue --template-file 'main.bicep'
-      
-      - job: Green
-        displayName: 'Deploy Green'
-        dependsOn: Blue
-        condition: succeeded()
-        pool:
-          vmImage: 'ubuntu-latest'
-        steps:
-          - task: AzureCLI@2
-            inputs:
-              azureSubscription: 'azure portal'
-              scriptType: 'bash'
-              scriptLocation: 'inlineScript'
-              inlineScript: |
-                az group create --name iacimpement-green --location 'Canada Central'
-
-                az deployment group create --resource-group iacimplement-green --template-file 'main.bicep'
+  
+pool:
+    vmImage: 'ubuntu-latest'
+  
+steps:
+  - task: AzureCLI@2
+    inputs:
+      azureSubscription: 'azure portal'
+      scriptType: 'bash'
+      scriptLocation: 'inlineScript'
+      inlineScript: |
+        # Create a resource group
+        az group create --name iacimplement --location 'Canada Central'
+  
+        # Deploy the Bicep file
+        az deployment group create --resource-group iacimplement --template-file 'main.bicep'
+  
