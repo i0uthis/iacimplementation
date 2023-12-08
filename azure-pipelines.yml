@@ -20,5 +20,5 @@ steps:
         az group create --name iacimplement --location 'Canada Central'
   
         # Deploy the Bicep file
-        az deployment group create --resource-group iacimplement --template-file 'appgateway.bicep'
+        az deployment group create --resource-group iacimplement --template-file 'main.bicep'
   
