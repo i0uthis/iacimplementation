@@ -14,5 +14,7 @@ stages:
           vmImage: 'ubuntu-latest'
         steps:
           - script: |
+              az group create --name iacimplement --location 'Canada Central'
+
               az deployment group create --resource-group iacimplement --template-file 'main.bicep'
             displayName: 'Deploy Blue Environment'
