@@ -4,21 +4,28 @@
 # https://aka.ms/yaml
 
 trigger:
-  - main
+  branches:
+    include:
+      - main
+      - development
   
 pool:
     vmImage: 'ubuntu-latest'
   
-steps:
-  - task: AzureCLI@2
-    inputs:
-      azureSubscription: 'azure portal'
-      scriptType: 'bash'
-      scriptLocation: 'inlineScript'
-      inlineScript: |
-        # Create a resource group
-        az group create --name iacimplement --location 'Canada Central'
+stages:
+  - stage: Deployment
+    jobs:
+      - job: Deploy
+        steps:
+          - task: AzureCLI@2
+            inputs:
+              azureSubscription: 'azure portal'
+              scriptType: 'bash'
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                # Create a resource group
+                az group create --name iacimplement --location 'Canada Central'
   
-        # Deploy the Bicep file
-        az deployment group create --resource-group iacimplement --template-file 'main.bicep'
+                # Deploy the Bicep file
+                az deployment group create --resource-group iacimplement --template-file 'main.bicep'
   
