@@ -37,7 +37,7 @@ resource httpdContainer1 'Microsoft.ContainerInstance/containerGroups@2023-05-01
     restartPolicy: restartPolicy
     ipAddress:{
       type: 'Public'
-      ip: '10.10.0.2'
+      ip: '10.10.0.1'
       ports: [
         {
           port: 80
