@@ -5,55 +5,23 @@
 
 trigger:
   - main
-
-stages:
-  - stage: TestingDeployment
-    displayName: 'Deploy to Testing Environment'
-    jobs:
-      - job: DeployTesting
-        displayName: 'Deploy to Testing Resource Group'
-        pool:
-          vmImage: 'ubuntu-latest'
-        steps:
-          - task: AzureCLI@2
-            displayName: 'Azure Login'
-            inputs:
-              azureSubscription: 'azure portal'
-              scriptType: 'bash'
-              scriptLocation: 'inlineScript'
-              inlineScript: |
-                az login --service-principal -u $(servicePrincipalId) -p $(servicePrincipalKey) --tenant $(tenantId)
   
-  - stage: productionDeployment
-    displayName: 'Deploy to Production Environment'
-    jobs:
-      - job: DeployProduction
-        displayName: 'Deploy to Production Environment'
-        pool:
-          vmImage: 'ubuntu-latest'
-        steps:
-          - task: AzureCLI@2
-            displayName: 'Azure Login'
-            inputs:
-              azureSubscription: 'azure portal'
-              scriptType: 'bash'
-              scriptLocation: 'inlineScript'
-              inlineScript: |
-                az login --service-principal -u $(servicePrincipalId) -p $(servicePrincipalKey) --tenant $(tenantId)
+pool:
+    vmImage: 'ubuntu-latest'
+  
+steps:
+  - task: AzureCLI@2
+    inputs:
+      azureSubscription: 'azure portal'
+      scriptType: 'bash'
+      scriptLocation: 'inlineScript'
+      inlineScript: |
+        # Create a resource group
+        az group create --name iacimplement --location 'Canada Central'
+  
+        # Deploy the Bicep file
+        az deployment group create --resource-group iacimplement --template-file 'main.bicep'
 
-  - stage: SwitchOver
-    displayName: 'Blue-Green Deployment SwitchOver'
-    jobs:
-      - job: SwitchOver
-        displayName: 'Switch-over Mechanism'
-        pool:
-          vmImage: 'ubuntu-latest'
-        steps:
-          - task: AzureCLI@2
-            displayName: 'Azure Login'
-            inputs:
-              azureSubscription: 'azure portal'
-              scriptType: 'bash'
-              scriptLocation: 'inlineScript'
-              inlineScript: |
-                az login --service-principal -u $(servicePrincipalId) -p $(servicePrincipalKey) --tenant $(tenantId)
+
+
+
