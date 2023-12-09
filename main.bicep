@@ -7,7 +7,6 @@ param vNetName string = 'beesKneeVNet'
 param appGatewayName string = 'beesKneeGateway'
 param restartPolicy string = 'Always'
 
-
 module httpdContainersModule './httpdcontainer.bicep' = {
   name: 'httpdContainersModule'
   params: {
