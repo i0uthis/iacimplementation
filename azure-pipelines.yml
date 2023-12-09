@@ -9,19 +9,37 @@ trigger:
 pool:
     vmImage: 'ubuntu-latest'
   
-steps:
-  - task: AzureCLI@2
-    inputs:
-      azureSubscription: 'azure portal'
-      scriptType: 'bash'
-      scriptLocation: 'inlineScript'
-      inlineScript: |
-        # Create a resource group
-        az group create --name iacimplement --location 'Canada Central'
-  
-        # Deploy the Bicep file
-        az deployment group create --resource-group iacimplement --template-file 'main.bicep'
+stages:
+  - stage: deploytest
+    displayName: 'Deploy to Test'
+    jobs:
+      - job: bgtest
+        displayName: 'Blue-Green Deployment to Test'
+        steps:
+          - task: AzureCLI@2
+            inputs:
+              azureSubscription: 'azure portal'
+              scriptType: 'bash'
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                az group create --name iacimplement-test --location 'Canada Central'
+
+                az deployment group create --resource-group iacimplement-test --template-file 'main.bicep'
 
 
+  - stage: deployprod
+    displayName: 'Deploy to Production'
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+    jobs:
+      - job: bgprod
+        displayName: 'Blue-Green deployment to Production'
+        steps:
+          - task: AzureCLI@2
+            inputs:
+              azureSubscription: 'azure portal'
+              scriptType: 'bash'
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                az group create --name iacimplement-prod --location 'Canada Central'
 
-
+                az deployment group create --resource-group iacimplement-prod --template-file 'main.bicep'
