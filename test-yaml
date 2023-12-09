@@ -21,4 +21,7 @@ steps:
   
         # Deploy the Bicep file
         az deployment group create --resource-group iacimplement --template-file 'main.bicep'
-  
+
+
+
+
