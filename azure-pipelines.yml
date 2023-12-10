@@ -4,7 +4,10 @@
 # https://aka.ms/yaml
 
 trigger:
-  - main
+  branches:
+    include:
+      - main
+      - blue-green
   
 pool:
     vmImage: 'ubuntu-latest'
@@ -29,17 +32,22 @@ stages:
 
   - stage: deployprod
     displayName: 'Deploy to Production'
-    condition: eq(variables['Build.SourceBranch'], 'refs/heads/blue-green')
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
     jobs:
-      - job: bgprod
-        displayName: 'Blue-Green deployment to Production'
-        steps:
-          - task: AzureCLI@2
-            inputs:
-              azureSubscription: 'iacimplement-prod'
-              scriptType: 'bash'
-              scriptLocation: 'inlineScript'
-              inlineScript: |
-                az group create --name iacimplement-prod --location 'Canada Central'
+      - deployment: deploytoprodjob
+        displayName: 'Deploy to Production'
+        environment: 'iacimplement-prod'
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: AzureCLI@2
+                  inputs:
+                    azureSubscription: 'iacimplement-prod'
+                    scriptType: 'bash'
+                    scriptLocation: 'inlineScript'
+                    inlineScript: |
+                      az group create --name iacimplement-prod --location 'Canada Central'
 
-                az deployment group create --resource-group iacimplement-prod --template-file 'main.bicep'
+                      az deployment group create --resource-group iacimplement-prod --template-file 'main.bicep'
+                    
