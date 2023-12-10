@@ -17,7 +17,7 @@ stages:
     displayName: 'Deploy to Test'
     jobs:
       - job: bgtest
-        displayName: 'Blue-Green Deployment to Test'
+        displayName: 'Deployment to Test'
         steps:
           - task: AzureCLI@2
             inputs:
@@ -36,7 +36,7 @@ stages:
     jobs:
       - deployment: deploytoprodjob
         displayName: 'Deploy to Production'
-        environment: 'iacimplement-prod'
+        #environment: 'iacimplement-prod'
         strategy:
           runOnce:
             deploy:
