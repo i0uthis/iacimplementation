@@ -33,6 +33,23 @@ stages:
                 az deployment group create --resource-group iacimplement-test --template-file 'main.bicep'
 
 
+  - stage: waitForApproval
+    displayName: 'Wait for Approval'
+    condition: eq(variables['Build.SourceBranch'], 'refs/heads/blue-green')
+    dependsOn: deploytest
+    jobs:
+      - deployment: waitForApprovalJob
+        displayName: 'Wait for Approval Job'
+        environment: 'iacimplement-prod'
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - script: echo "Waiting for manual approval..."
+                  displayName: 'Waiting for Manual Approval'
+                  continueOnError: true
+              
+
   - stage: deployprod
     displayName: 'Deploy to Production'
     condition: eq(variables['Build.SourceBranch'], 'refs/heads/blue-green')
@@ -54,19 +71,4 @@ stages:
 
                       az deployment group create --resource-group iacimplement-prod --template-file 'main.bicep'
                     
-                      - stage: waitForApproval
-                      displayName: 'Wait for Approval'
-                      condition: eq(variables['Build.SourceBranch'], 'refs/heads/blue-green')
-                      dependsOn: deployprod
-                      jobs:
-                        - deployment: waitForApprovalJob
-                          displayName: 'Wait for Approval Job'
-                          environment: 'iacimplement-prod'
-                          strategy:
-                            runOnce:
-                              deploy:
-                                steps:
-                                  - script: echo "Waiting for manual approval..."
-                                    displayName: 'Waiting for Manual Approval'
-                                    continueOnError: true # Optional, to prevent failing the job
-                    
+  
