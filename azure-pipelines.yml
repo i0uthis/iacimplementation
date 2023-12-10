@@ -19,9 +19,6 @@ stages:
       - job: bgtest
         displayName: 'Blue-Green Deployment to Test'
         steps:
-          - script: |
-              ls -la
-
           - task: AzureCLI@2
             inputs:
               azureSubscription: 'iacimplement-test'
