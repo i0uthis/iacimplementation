@@ -48,6 +48,7 @@ stages:
                 - script: |
                     git checkout blue-green
                     ls -la
+                    cat main.bicep
 
                 - task: AzureCLI@2
                   inputs:
