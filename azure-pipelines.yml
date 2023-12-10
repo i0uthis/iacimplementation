@@ -46,6 +46,8 @@ stages:
                   fetchDepth: 1
                   persistCredentials: true
                 - script: |
+                    git ls-remote --heads origin blue-green
+                    git fetch
                     git checkout blue-green
                     ls -la
                     git show HEAD:main.bicep
