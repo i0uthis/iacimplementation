@@ -35,7 +35,7 @@ stages:
 
   - stage: deployprod
     displayName: 'Deploy to Production'
-    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/blue-green'))
     jobs:
       - deployment: deploytoprodjob
         displayName: 'Deploy to Production'
