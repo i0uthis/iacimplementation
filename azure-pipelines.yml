@@ -36,7 +36,7 @@ stages:
     jobs:
       - deployment: deploytoprodjob
         displayName: 'Deploy to Production'
-        #environment: 'iacimplement-prod'
+        environment: 'iacimplement-prod'
         strategy:
           runOnce:
             deploy:
@@ -52,6 +52,6 @@ stages:
                     inlineScript: |
                       az group create --name iacimplement-prod --location 'Canada Central'
 
-                      az deployment group create --resource-group iacimplement-prod --template-file 'main.bicep'
+                      az deployment group create --resource-group iacimplement-prod --template-file '$(System.DefaultWorkingDirectory)/main.bicep'
                     
                       
