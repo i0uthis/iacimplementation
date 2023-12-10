@@ -32,7 +32,7 @@ stages:
 
           - task: AzureCLI@2
             inputs:
-              azureSubscription: 'iacimplement-prod'
+              azureSubscription: 'iacimplement-test'
               scriptType: 'bash'
               scriptLocation: 'inlineScript'
               inlineScript: |
