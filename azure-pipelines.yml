@@ -32,7 +32,7 @@ stages:
 
   - stage: deployprod
     displayName: 'Deploy to Production'
-    condition: eq(variables['Build.SourceBranch'], 'refs/heads/blue-green')
+    condition: always()
     jobs:
       - deployment: deploytoprodjob
         displayName: 'Deploy to Production'
