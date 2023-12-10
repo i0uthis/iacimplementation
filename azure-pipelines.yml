@@ -41,6 +41,10 @@ stages:
           runOnce:
             deploy:
               steps:
+                - checkout: self
+                  clean: true
+                  fetchDepth: 1
+                  persistCredentials: true
                 - script: |
                     git checkout blue-green
                     ls -la
