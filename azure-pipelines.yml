@@ -41,6 +41,9 @@ stages:
           runOnce:
             deploy:
               steps:
+                - script: |
+                    ls -la
+
                 - task: AzureCLI@2
                   inputs:
                     azureSubscription: 'iacimplement-prod'
