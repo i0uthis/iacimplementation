@@ -32,7 +32,7 @@ stages:
 
   - stage: deployprod
     displayName: 'Deploy to Production'
-    condition: always()
+    condition: eq(variables['Build.SourceBranch'], 'refs/heads/blue-green')
     jobs:
       - deployment: deploytoprodjob
         displayName: 'Deploy to Production'
@@ -42,6 +42,7 @@ stages:
             deploy:
               steps:
                 - script: |
+                    git checkout blue-green
                     ls -la
 
                 - task: AzureCLI@2
