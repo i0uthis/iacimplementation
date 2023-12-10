@@ -19,9 +19,20 @@ stages:
       - job: bgtest
         displayName: 'Deployment to Test'
         steps:
+          - checkout: self
+            clean: true
+            fetchDepth: 1
+            persistCredentials: true
+          - script: |
+              git ls-remote --heads origin blue-green
+              git fetch
+              git checkout blue-green
+              ls -la
+              git show HEAD:main.bicep
+
           - task: AzureCLI@2
             inputs:
-              azureSubscription: 'iacimplement-test'
+              azureSubscription: 'iacimplement-prod'
               scriptType: 'bash'
               scriptLocation: 'inlineScript'
               inlineScript: |
