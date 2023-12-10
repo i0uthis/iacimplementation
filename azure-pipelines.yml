@@ -53,6 +53,6 @@ stages:
                     inlineScript: |
                       az group create --name iacimplement-prod --location 'Canada Central'
 
-                      az deployment group create --resource-group iacimplement-prod --template-file '$(System.DefaultWorkingDirectory)/main.bicep'
+                      az deployment group create --resource-group iacimplement-prod --template-file 'main.bicep'
                     
                       
