@@ -56,7 +56,7 @@ resource httpdContainer2 'Microsoft.ContainerInstance/containerGroups@2023-05-01
       {
         name: 'httpd-container-2'
         properties: {
-          image: 'iouthis/iacdockerhubrepo:v2'
+          image: 'iouthis/iacdockerhubrepo:v1'
           resources: {
             requests: {
               cpu: 1
