@@ -1,15 +1,106 @@
 @description('Location for all resources.')
-param location string 
+param location string = resourceGroup().location
 
-param containerIPv4Address1 string
-param containerIPv4Address2 string
 
-param vNetName string
-param publicIPName string
-param appGatewayName string
+param appName1 string = 'beesKee1'
+param appName2 string = 'beesKnee2'
+
+@allowed([
+  'Always'
+  'Never'
+  'OnFailure'
+])
+param restartPolicy string = 'Always'
+
+
+var vNetName = 'beesKneeVNet'
+var publicIPName = 'public_ip'
+var appGateWayName = 'beesKneeGateway'
 var virtualNetworkPrefix = '10.0.0.0/16'
 var subnetPrefix = '10.0.0.0/24'
 var backendSubnetPrefix = '10.0.1.0/24'
+
+resource httpdContainer1 'Microsoft.ContainerInstance/containerGroups@2023-05-01' = {
+  name: '${appName1}-httpcontainer1'
+  location: location
+  properties: {
+    containers: [
+      {
+        name: 'httpd-container-1'
+        properties: {
+          image: 'iouthis/iacdockerhubrepo:latest'
+          resources: {
+            requests: {
+              cpu: 1
+              memoryInGB: 1
+            }
+          }
+          ports:[
+            {
+              port: 80
+              protocol: 'TCP'
+            }
+          ]
+        }
+      }
+    ]
+    osType: 'Linux'
+    restartPolicy: restartPolicy
+    ipAddress:{
+      type: 'Public'
+      ip: '10.10.0.2'
+      ports: [
+        {
+          port: 80
+          protocol: 'TCP'
+        }
+      ]
+    }
+  }
+}
+
+resource httpdContainer2 'Microsoft.ContainerInstance/containerGroups@2023-05-01' = {
+  name: '${appName2}-httpcontainer2'
+  location: location
+  properties: {
+    containers: [
+      {
+        name: 'httpd-container-2'
+        properties: {
+          image: 'iouthis/iacdockerhubrepo:latest'
+          resources: {
+            requests: {
+              cpu: 1
+              memoryInGB: 1
+            }
+          }
+          ports: [
+            {
+              port: 80
+              protocol: 'TCP'
+            }
+          ]
+        }
+      }
+    ]
+    osType: 'Linux'
+    restartPolicy: restartPolicy
+    ipAddress:{
+      type: 'Public'
+      ip: '10.10.0.2'
+      ports: [
+        {
+          port: 80
+          protocol: 'TCP'
+        }
+      ]
+    }
+  }
+}
+
+output containerIPv4Address1 string = httpdContainer1.properties.ipAddress.ip
+output containerIPv4Address2 string = httpdContainer2.properties.ipAddress.ip
+
 
 resource publicIPAddress 'Microsoft.Network/publicIPAddresses@2023-05-01'= {
   name: publicIPName
@@ -57,7 +148,7 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2023-05-01' = {
 }
 
 resource applicationGateWay 'Microsoft.Network/applicationGateways@2023-05-01' = {
-  name: appGatewayName
+  name: appGateWayName
   location: location
   properties: {
     sku: {
@@ -99,11 +190,11 @@ resource applicationGateWay 'Microsoft.Network/applicationGateways@2023-05-01' =
         properties: {
           backendAddresses: [
             {
-              ipAddress: containerIPv4Address1
+              ipAddress: httpdContainer1.properties.ipAddress.ip
               
             }
             {
-              ipAddress: containerIPv4Address2
+              ipAddress: httpdContainer2.properties.ipAddress.ip
             }
           ]
         }
@@ -126,10 +217,10 @@ resource applicationGateWay 'Microsoft.Network/applicationGateways@2023-05-01' =
         name: 'myListener'
         properties: {
           frontendIPConfiguration: {
-            id: resourceId('Microsoft.Network/applicationGateways/frontendIPConfigurations', appGatewayName, 'appGwPublicFrontendIp')
+            id: resourceId('Microsoft.Network/applicationGateways/frontendIPConfigurations', appGateWayName, 'appGwPublicFrontendIp')
           }
           frontendPort: {
-            id: resourceId('Microsoft.Network/applicationGateways/frontendPorts', appGatewayName, 'port_80')
+            id: resourceId('Microsoft.Network/applicationGateways/frontendPorts', appGateWayName, 'port_80')
           }
           protocol: 'Http'
           requireServerNameIndication: false
@@ -142,13 +233,13 @@ resource applicationGateWay 'Microsoft.Network/applicationGateways@2023-05-01' =
         properties: {
           ruleType: 'Basic'
           httpListener: {
-            id: resourceId('Microsoft.Network/applicationGateways/httpListeners', appGatewayName, 'myListener')
+            id: resourceId('Microsoft.Network/applicationGateways/httpListeners', appGateWayName, 'myListener')
           }
           backendAddressPool: {
-            id: resourceId('Microsoft.Network/applicationGateways/backendAddressPools', appGatewayName, 'myBackendPool')
+            id: resourceId('Microsoft.Network/applicationGateways/backendAddressPools', appGateWayName, 'myBackendPool')
           }
           backendHttpSettings: {
-            id: resourceId('Microsoft.Network/applicationGateways/backendHttpSettingsCollection', appGatewayName, 'myHTTPSetting')
+            id: resourceId('Microsoft.Network/applicationGateways/backendHttpSettingsCollection', appGateWayName, 'myHTTPSetting')
           }
           priority: 100
         }

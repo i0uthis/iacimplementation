@@ -1,15 +1,16 @@
-param appName string = 'beesknee'
-param location string = resourceGroup().location
+param appName1 string 
+param appName2 string 
+param location string 
 
 @allowed([
   'Always'
   'Never'
   'OnFailure'
 ])
-param restartPolicy string = 'Always'
+param restartPolicy string 
 
 resource httpdContainer1 'Microsoft.ContainerInstance/containerGroups@2023-05-01' = {
-  name: '${appName}-httpcontainer1'
+  name: '${appName1}-httpcontainer1'
   location: location
   properties: {
     containers: [
@@ -36,6 +37,7 @@ resource httpdContainer1 'Microsoft.ContainerInstance/containerGroups@2023-05-01
     restartPolicy: restartPolicy
     ipAddress:{
       type: 'Public'
+      ip: '10.10.0.1'
       ports: [
         {
           port: 80
@@ -47,7 +49,7 @@ resource httpdContainer1 'Microsoft.ContainerInstance/containerGroups@2023-05-01
 }
 
 resource httpdContainer2 'Microsoft.ContainerInstance/containerGroups@2023-05-01' = {
-  name: '${appName}-httpcontainer2'
+  name: '${appName2}-httpcontainer2'
   location: location
   properties: {
     containers: [
@@ -74,6 +76,7 @@ resource httpdContainer2 'Microsoft.ContainerInstance/containerGroups@2023-05-01
     restartPolicy: restartPolicy
     ipAddress:{
       type: 'Public'
+      ip: '10.10.0.2'
       ports: [
         {
           port: 80

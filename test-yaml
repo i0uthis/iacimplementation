@@ -1,0 +1,27 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+  - main
+  
+pool:
+    vmImage: 'ubuntu-latest'
+  
+steps:
+  - task: AzureCLI@2
+    inputs:
+      azureSubscription: 'azure portal'
+      scriptType: 'bash'
+      scriptLocation: 'inlineScript'
+      inlineScript: |
+        # Create a resource group
+        az group create --name iacimplement --location 'Canada Central'
+  
+        # Deploy the Bicep file
+        az deployment group create --resource-group iacimplement --template-file 'main.bicep'
+
+
+
+
